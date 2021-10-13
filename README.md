@@ -11,7 +11,3 @@ Installation instructions for installing from source can be found [here](doc/mas
 The following is recommended if working with a Virtual Machine:
 - Remove firewall (usually activated in Windows), at least for private networks.
 - For the machines to be able to see each other, use VirtualBox `Bridged adapter`, and set the virtual machine's IP within the machine.
-
-## Presentation
-
-https://gitpitch.com/jgvictores/master-ipr/master
