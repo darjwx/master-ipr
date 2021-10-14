@@ -11,7 +11,8 @@
 
 ## A nivel grafo
 ### Nós
-### * -2: parentId del nodo origen
+### * -2: parentId del nodo start
+### * -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
 
 ## Initial values are hard-coded (A nivel mapa)
 
@@ -69,17 +70,17 @@ with open(FILE_NAME) as f:
 
 ## a nivel mapa, integramos la info que teníamos de start & end
 
-charMap[START_X][START_Y] = '3'
-charMap[END_X][END_Y] = '4'
+charMap[START_X][START_Y] = '3' # 3: start
+charMap[END_X][END_Y] = '4' # 4: goal
 
 ## volcamos mapa por consola
 
 dumpMap()
 
-###### Empieza algoritmos
+###### Empieza algoritmo
 
-done = False
-goalParentId = -1
+done = False  # clásica condición de parada del bucle `while`
+goalParentId = -1  # -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
 
 while not done:
     print("--------------------- number of nodes: "+str(len(nodes)))
@@ -91,7 +92,7 @@ while not done:
         tmpY = node.y
         if( charMap[tmpX][tmpY] == '4' ):
             print("up: GOALLLL!!!")
-            goalParentId = node.myId
+            goalParentId = node.myId  # aquí sustituye por real
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
@@ -105,7 +106,7 @@ while not done:
         tmpY = node.y
         if( charMap[tmpX][tmpY] == '4' ):
             print("down: GOALLLL!!!")
-            goalParentId = node.myId
+            goalParentId = node.myId # aquí sustituye por real
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
@@ -119,7 +120,7 @@ while not done:
         tmpY = node.y + 1
         if( charMap[tmpX][tmpY] == '4' ):
             print("right: GOALLLL!!!")
-            goalParentId = node.myId
+            goalParentId = node.myId # aquí sustituye por real
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
@@ -133,7 +134,7 @@ while not done:
         tmpY = node.y - 1
         if( charMap[tmpX][tmpY] == '4' ):
             print("left: GOALLLL!!!")
-            goalParentId = node.myId
+            goalParentId = node.myId # aquí sustituye por real
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
