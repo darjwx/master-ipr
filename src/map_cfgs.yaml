@@ -1,0 +1,87 @@
+map1:
+  route: '/map1/map1.csv'
+  coords:
+    start_x: 2
+    start_y: 2
+    end_x: 7
+    end_y: 2
+
+map2:
+  route: '/map2/map2.csv'
+  coords:
+    start_x: 3
+    start_y: 3
+    end_x: 11
+    end_y: 8
+
+map3:
+  route: '/map3/map3.csv'
+  coords:
+    start_x: 5
+    start_y: 11
+    end_x: 5
+    end_y: 15
+
+map4:
+  route: '/map4/map4.csv'
+  coords:
+    start_x: 5
+    start_y: 15
+    end_x: 5
+    end_y: 11
+
+map5:
+  route: '/map5/map5.csv'
+  coords:
+    start_x: 4
+    start_y: 16
+    end_x: 4
+    end_y: 10
+
+map6:
+  route: '/map6/map6.csv'
+  coords:
+    start_x: 3
+    start_y: 3
+    end_x: 11
+    end_y: 18
+
+map7:
+  route: '/map7/map7.csv'
+  coords:
+    start_x: 4
+    start_y: 10
+    end_x: 4
+    end_y: 16
+
+map8:
+  route: '/map8/map8.csv'
+  coords:
+    start_x: 3
+    start_y: 3
+    end_x: 11
+    end_y: 18
+
+map9:
+  route: '/map9/map9.csv'
+  coords:
+    start_x: 4
+    start_y: 10
+    end_x: 4
+    end_y: 16
+
+map10:
+  route: '/map10/map10.csv'
+  coords:
+    start_x: 4
+    start_y: 10
+    end_x: 4
+    end_y: 16
+
+map11:
+  route: '/map11/map11.csv'
+  coords:
+    start_x: 4
+    start_y: 16
+    end_x: 4
+    end_y: 10

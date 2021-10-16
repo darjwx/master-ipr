@@ -18,9 +18,12 @@
 import argparse
 
 import time
+import yaml
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--map', type=str, default='/usr/local/share/master-ipr/map1/map1.csv', help='Route to the desired map')
+parser.add_argument('--map', type=str, default=None, help='Map to test')
+parser.add_argument('--root_path', type=str, default=None, help='Path to the project root')
+parser.add_argument('--route', type=str, default='/usr/local/share/master-ipr/map1/map1.csv', help='Route to the desired map')
 parser.add_argument('--start_x', type=int, default=2, help='Starting X coord')
 parser.add_argument('--start_y', type=int, default=2, help='Starting Y coord')
 parser.add_argument('--end_x', type=int, default=7, help='Ending X coord')
@@ -42,13 +45,30 @@ class Node:
                          " | parentId "+str(self.parentId))
 
 
+# Read conf map
+if args.map is not None:
+    with open(args.root_path + '/src/map_cfgs.yaml', 'r') as ymlfile:
+        cfg = yaml.load(ymlfile)
+
+    map = args.root_path + cfg[args.map]['route']
+    start_x = cfg[args.map]['coords']['start_x']
+    start_y = cfg[args.map]['coords']['start_y']
+    end_x = cfg[args.map]['coords']['end_x']
+    end_y = cfg[args.map]['coords']['end_y']
+
+else:
+    map = args.route
+    start_x = args.start_x
+    start_y = args.start_y
+    end_x = args.end_x
+    end_y = args.end_y
 ## `nodes` contendrá los nodos del grafo
 
 nodes = []
 
 ## creamos primer nodo
 
-init = Node(args.start_x, args.start_y, 0, -2)
+init = Node(start_x, start_y, 0, -2)
 # init.dump()  # comprobar que primer nodo bien
 
 ## añadimos el primer nodo a `nodos`
@@ -67,7 +87,7 @@ def dumpMap():
 
 ## de fichero, (to parse/parsing) para llenar estructura de datos para mapa
 
-with open(args.map) as f:
+with open(map) as f:
     line = f.readline()
     while line:
         charLine = line.strip().split(',')
@@ -76,8 +96,8 @@ with open(args.map) as f:
 
 ## a nivel mapa, integramos la info que teníamos de start & end
 
-charMap[args.start_y][args.start_x] = '3' # 3: start
-charMap[args.end_x][args.end_y] = '4' # 4: goal
+charMap[start_y][start_x] = '3' # 3: start
+charMap[end_x][end_y] = '4' # 4: goal
 
 ## volcamos mapa por consola
 
