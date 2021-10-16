@@ -17,6 +17,8 @@
 # Argument parser
 import argparse
 
+import time
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--map', type=str, default='/usr/local/share/master-ipr/map1/map1.csv', help='Route to the desired map')
 parser.add_argument('--start_x', type=int, default=2, help='Starting X coord')
@@ -86,6 +88,8 @@ dumpMap()
 done = False  # clásica condición de parada del bucle `while`
 goalParentId = -1  # -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
 
+start = time.time()
+end = 0
 while not done:
     print("--------------------- number of nodes: "+str(len(nodes)))
     for node in nodes:
@@ -95,6 +99,7 @@ while not done:
         tmpX = node.x - 1
         tmpY = node.y
         if( charMap[tmpX][tmpY] == '4' ):
+            end = time.time() - start
             print("up: GOALLLL!!!")
             goalParentId = node.myId  # aquí sustituye por real
             done = True
@@ -109,6 +114,7 @@ while not done:
         tmpX = node.x + 1
         tmpY = node.y
         if( charMap[tmpX][tmpY] == '4' ):
+            end = time.time() - start
             print("down: GOALLLL!!!")
             goalParentId = node.myId # aquí sustituye por real
             done = True
@@ -123,6 +129,7 @@ while not done:
         tmpX = node.x
         tmpY = node.y + 1
         if( charMap[tmpX][tmpY] == '4' ):
+            end = time.time() - start
             print("right: GOALLLL!!!")
             goalParentId = node.myId # aquí sustituye por real
             done = True
@@ -137,6 +144,7 @@ while not done:
         tmpX = node.x
         tmpY = node.y - 1
         if( charMap[tmpX][tmpY] == '4' ):
+            end = time.time() - start
             print("left: GOALLLL!!!")
             goalParentId = node.myId # aquí sustituye por real
             done = True
@@ -150,6 +158,7 @@ while not done:
         dumpMap()
 
 print("%%%%%%%%%%%%%%%%%%%")
+print(f"Time until finding the goal: {end*1000} ms")
 ok = False
 while not ok:
     for node in nodes:
