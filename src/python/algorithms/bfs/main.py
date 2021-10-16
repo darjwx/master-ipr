@@ -14,13 +14,16 @@
 ### * -2: parentId del nodo start
 ### * -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
 
-## Initial values are hard-coded (A nivel mapa)
+# Argument parser
+import argparse
 
-FILE_NAME = "/usr/local/share/master-ipr/map1/map1.csv"
-START_X = 2
-START_Y = 2
-END_X = 7
-END_Y = 2
+parser = argparse.ArgumentParser()
+parser.add_argument('--map', type=str, default='/usr/local/share/master-ipr/map1/map1.csv', help='Route to the desired map')
+parser.add_argument('--start_x', type=int, default=2, help='Starting X coord')
+parser.add_argument('--start_y', type=int, default=2, help='Starting Y coord')
+parser.add_argument('--end_x', type=int, default=7, help='Ending X coord')
+parser.add_argument('--end_y', type=int, default=2, help='Ending Y coord')
+args = parser.parse_args()
 
 ## Define Node class (A nivel grafo/nodo)
 
@@ -36,13 +39,14 @@ class Node:
                          " | id "+str(self.myId)+\
                          " | parentId "+str(self.parentId))
 
+
 ## `nodes` contendrá los nodos del grafo
 
 nodes = []
 
 ## creamos primer nodo
 
-init = Node(START_X, START_Y, 0, -2)
+init = Node(args.start_x, args.start_y, 0, -2)
 # init.dump()  # comprobar que primer nodo bien
 
 ## añadimos el primer nodo a `nodos`
@@ -61,7 +65,7 @@ def dumpMap():
 
 ## de fichero, (to parse/parsing) para llenar estructura de datos para mapa
 
-with open(FILE_NAME) as f:
+with open(args.map) as f:
     line = f.readline()
     while line:
         charLine = line.strip().split(',')
@@ -70,8 +74,8 @@ with open(FILE_NAME) as f:
 
 ## a nivel mapa, integramos la info que teníamos de start & end
 
-charMap[START_X][START_Y] = '3' # 3: start
-charMap[END_X][END_Y] = '4' # 4: goal
+charMap[args.start_y][args.start_x] = '3' # 3: start
+charMap[args.end_x][args.end_y] = '4' # 4: goal
 
 ## volcamos mapa por consola
 
