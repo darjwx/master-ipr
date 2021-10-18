@@ -96,7 +96,7 @@ with open(map) as f:
 
 ## a nivel mapa, integramos la info que teníamos de start & end
 
-charMap[start_y][start_x] = '3' # 3: start
+charMap[start_x][start_y] = '3' # 3: start
 charMap[end_x][end_y] = '4' # 4: goal
 
 ## volcamos mapa por consola
