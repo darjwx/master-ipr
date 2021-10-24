@@ -16,6 +16,7 @@
 
 # Argument parser
 import argparse
+from os import system
 
 import time
 import yaml
@@ -83,8 +84,21 @@ charMap = []
 ## creamos función para volcar estructura de datos para mapa
 
 def dumpMap():
+    system('clear')
     for line in charMap:
-        print(line)
+        for i in range(len(line)):
+            # Highlight path
+            if line[i] == '5':
+                print('\033[1;31m{}\033[0m'.format(line[i]), end='    ') # Red: path
+            elif line[i] == '3' or line[i] == '4':
+                print('\033[1;34m{}\033[0m'.format(line[i]), end='    ') # Blue: start and goal
+            elif line[i] == '1':
+                print('\033[1;40m{}\033[0m'.format(line[i]), end='    ') # Black: obstacles
+            elif line[i] == '2':
+                print('\033[1;32m{}\033[0m'.format(line[i]), end='    ') # Green: evaluated nodes
+            else:
+                print('\033[1;33m{}\033[0m'.format(line[i]), end='    ') # Yellow: non-evaluated nodes
+        print('\n')
 
 ## de fichero, (to parse/parsing) para llenar estructura de datos para mapa
 
@@ -99,10 +113,6 @@ with open(map) as f:
 
 charMap[start_x][start_y] = '3' # 3: start
 charMap[end_x][end_y] = '4' # 4: goal
-
-## volcamos mapa por consola
-
-dumpMap()
 
 ###### Empieza algoritmo
 
@@ -176,16 +186,18 @@ while not done:
             charMap[tmpX][tmpY] = '2'
             nodes.append(newNode)
 
-        dumpMap()
-
 print("%%%%%%%%%%%%%%%%%%%")
 print(f"Time until finding the goal: {end*1000} ms")
 ok = False
 while not ok:
     for node in nodes:
         if( node.myId == goalParentId ):
+            if charMap[node.x][node.y] != '3':
+                charMap[node.x][node.y] = '5'
             node.dump()
             goalParentId = node.parentId
             if( goalParentId == -2):
                 print("%%%%%%%%%%%%%%%%%2")
                 ok = True
+
+dumpMap()
