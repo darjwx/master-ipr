@@ -1,0 +1,238 @@
+#! /usr/bin/env python
+
+## A nivel mapa
+### Del mapa original
+### * 0: libre
+### * 1: ocupado (muro/obstáculo)
+### Nós
+### * 2: visitado
+### * 3: start
+### * 4: goal
+
+## A nivel grafo
+### Nós
+### * -2: parentId del nodo start
+### * -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
+
+# Argument parser
+import argparse
+from os import system
+from queue import PriorityQueue
+
+import time
+import yaml
+import math
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--map', type=str, default=None, help='Map to test')
+parser.add_argument('--root_path', type=str, default=None, help='Path to the project root')
+parser.add_argument('--route', type=str, default='/usr/local/share/master-ipr/map1/map1.csv', help='Route to the desired map')
+parser.add_argument('--start_x', type=int, default=2, help='Starting X coord')
+parser.add_argument('--start_y', type=int, default=2, help='Starting Y coord')
+parser.add_argument('--end_x', type=int, default=7, help='Ending X coord')
+parser.add_argument('--end_y', type=int, default=2, help='Ending Y coord')
+args = parser.parse_args()
+
+## Define Node class (A nivel grafo/nodo)
+
+class Node:
+    def __init__(self, x, y, myId, parentId, g, h, f):
+        self.x = x
+        self.y = y
+        self.myId = myId
+        self.parentId = parentId
+        self.g = g
+        self.h = h
+        self.f = f
+
+    # <
+    def __lt__(self, node):
+        if self.myId < node.myId:
+            return True
+        else:
+            return False
+    # <=
+    def __le__(self, node):
+        if self.myId <= node.myId:
+            return True
+        else:
+            return False
+
+    def dump(self):
+        print("---------- x "+str(self.x)+\
+                         " | y "+str(self.y)+\
+                         " | id "+str(self.myId)+\
+                         " | parentId "+str(self.parentId)+\
+                         " | Cost "+str(self.f))
+
+
+# Read conf map
+if args.map is not None:
+    with open(args.root_path + '/src/map_cfgs.yaml', 'r') as ymlfile:
+        cfg = yaml.load(ymlfile)
+
+    map = args.root_path + cfg[args.map]['route']
+    start_x = cfg[args.map]['coords']['start_x']
+    start_y = cfg[args.map]['coords']['start_y']
+    end_x = cfg[args.map]['coords']['end_x']
+    end_y = cfg[args.map]['coords']['end_y']
+
+else:
+    map = args.route
+    start_x = args.start_x
+    start_y = args.start_y
+    end_x = args.end_x
+    end_y = args.end_y
+## `nodes` contendrá los nodos del grafo
+
+path = []
+
+## creamos primer nodo
+
+init = Node(start_x, start_y, 0, -2, 0, 0, 0)
+# init.dump()  # comprobar que primer nodo bien
+
+## añadimos el primer nodo a `nodos`
+
+path.append((init.f, init))
+
+## creamos estructura de datos para mapa
+
+charMap = []
+
+## creamos función para volcar estructura de datos para mapa
+
+def dumpMap():
+    for line in charMap:
+        print(line)
+
+## de fichero, (to parse/parsing) para llenar estructura de datos para mapa
+
+with open(map) as f:
+    line = f.readline()
+    while line:
+        charLine = line.strip().split(',')
+        charMap.append(charLine)
+        line = f.readline()
+
+## a nivel mapa, integramos la info que teníamos de start & end
+
+charMap[start_x][start_y] = '3' # 3: start
+charMap[end_x][end_y] = '4' # 4: goal
+
+## volcamos mapa por consola
+
+dumpMap()
+
+###### Empieza algoritmo
+
+done = False  # clásica condición de parada del bucle `while`
+goalParentId = -1  # -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
+
+start = time.time()
+end = 0
+moves = {'up': (-1,0),
+         'upright': (-1,1),
+         'right': (0,1),
+         'downright': (1,1),
+         'down': (1,0),
+         'downleft': (1,-1),
+         'left': (0,-1),
+         'upleft': (-1,-1),}
+ids =  ['up', 'upright', 'right', 'downright', 'down', 'downleft', 'left', 'upleft']
+
+eval = PriorityQueue()
+id_nodes = 0
+while not done:
+    print("--------------------- number of nodes: "+str(id_nodes+1))
+    p = path[-1][1]
+    p.dump()
+
+    # Miramos los alrededores del nodo
+    for id in ids:
+        tmpX = p.x + moves[id][0]
+        tmpY = p.y + moves[id][1]
+
+        if charMap[tmpX][tmpY] == '4':
+            end = time.time() - start
+            print("GOALLLL!!!")
+            goalParentId = p.myId  # aquí sustituye por real
+            done = True
+            break
+        elif charMap[tmpX][tmpY] == '0':
+            print("Mark visited")
+            id_nodes = id_nodes+1
+            # Calcular coste
+            g = p.g + 1 # Coste unitario entre nodos. TODO: que no sea unitario
+            dx = abs(tmpX - end_x)
+            dy = abs(tmpY - end_y)
+            D = 1
+            D2 = math.sqrt(2)
+            h = D * (dx+dy) + (D2 - 2*D) * min(dx,dy) # Distancia diagonal a la meta
+            f = g+h
+            newNode = Node(tmpX, tmpY, id_nodes, p.myId, g, h, f)
+            charMap[tmpX][tmpY] = '2'
+            eval.put((f, newNode))
+        elif charMap[tmpX][tmpY] == '2':
+            print('Mark in eval queue, recalculate cost')
+            # Calcular coste
+            g = p.g + 1 # Coste unitario entre nodos. TODO: que no sea unitario
+            dx = abs(tmpX - end_x)
+            dy = abs(tmpY - end_y)
+            D = 1
+            D2 = math.sqrt(2)
+            h = D * (dx+dy) + (D2 - 2*D) * min(dx,dy) # Distancia diagonal a la meta
+            f = g+h
+
+            for item in eval.queue:
+                i = item[1]
+                if i.x == tmpX and i.y == tmpY:
+                    if i.f > f:
+                        eval.queue.remove(item)
+                        newNode = Node(tmpX, tmpY, i.myId, p.myId, g, h, f)
+                        eval.put((f, newNode))
+                        break
+
+
+        elif charMap[tmpX][tmpY] == '5':
+            print('Mark in path list, re-evaluate and update parent')
+            # Calcular coste
+            g = p.g + 1 # Coste unitario entre nodos. TODO: que no sea unitario
+            dx = abs(tmpX - end_x)
+            dy = abs(tmpY - end_y)
+            D = 1
+            D2 = math.sqrt(2)
+            h = D * (dx+dy) + (D2 - 2*D) * min(dx,dy) # Distancia diagonal a la meta
+            f = g+h
+
+            for it in range(len(path)):
+                item = path[it][1]
+                if item.x == tmpX and item.y == tmpY:
+                    if item.f > f:
+                        path.pop(it)
+                        newNode = Node(tmpX, tmpY, item.myId, p.myId, g, h, f)
+                        path.append(newNode)
+                        break
+
+        else:
+            print("Obstacle")
+
+    # Buscamos el mejor nodo para nuestro camino a la meta
+    path.append(eval.get())
+
+print("%%%%%%%%%%%%%%%%%%%")
+print(f"Time until finding the goal: {end*1000} ms")
+ok = False
+while not ok:
+    for p in path:
+        node = p[1]
+        if( node.myId == goalParentId ):
+            if charMap[node.x][node.y] != '3':
+                charMap[node.x][node.y] = '5'
+            node.dump()
+            goalParentId = node.parentId
+            if( goalParentId == -2):
+                print("%%%%%%%%%%%%%%%%%2")
+                ok = True
+
+dumpMap()
