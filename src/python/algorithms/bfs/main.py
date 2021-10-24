@@ -1,20 +1,17 @@
 #! /usr/bin/env python
 
-## A nivel mapa
-### Del mapa original
-### * 0: libre
+## Map level
+### * 0: free
 ### * 1: ocupado (muro/obstáculo)
-### Nós
-### * 2: visitado
+### * 2: visited
 ### * 3: start
 ### * 4: goal
+### * 5: path
 
-## A nivel grafo
-### Nós
-### * -2: parentId del nodo start
-### * -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
+## Graph level
+### * -2: starting node parentId
+### * -1: goal node temp parentId
 
-# Argument parser
 import argparse
 from os import system
 
@@ -31,14 +28,13 @@ parser.add_argument('--end_x', type=int, default=7, help='Ending X coord')
 parser.add_argument('--end_y', type=int, default=2, help='Ending Y coord')
 args = parser.parse_args()
 
-## Define Node class (A nivel grafo/nodo)
-
+# Node class
 class Node:
     def __init__(self, x, y, myId, parentId):
-        self.x = x
-        self.y = y
-        self.myId = myId
-        self.parentId = parentId
+        self.x = x # X coord
+        self.y = y # Y coord
+        self.myId = myId # Node ID
+        self.parentId = parentId # Parent ID
     def dump(self):
         print("---------- x "+str(self.x)+\
                          " | y "+str(self.y)+\
@@ -63,26 +59,17 @@ else:
     end_x = args.end_x
     end_y = args.end_y
 
-
-## `nodes` contendrá los nodos del grafo
-
+# List of Nodes
 nodes = []
 
-## creamos primer nodo
-
+# Starting position Node
 init = Node(start_x, start_y, 0, -2)
-# init.dump()  # comprobar que primer nodo bien
-
-## añadimos el primer nodo a `nodos`
-
 nodes.append(init)
 
-## creamos estructura de datos para mapa
-
+# Map 2D matrix
 charMap = []
 
-## creamos función para volcar estructura de datos para mapa
-
+# Print color coded map
 def dumpMap():
     system('clear')
     for line in charMap:
@@ -100,8 +87,7 @@ def dumpMap():
                 print('\033[1;33m{}\033[0m'.format(line[i]), end='    ') # Yellow: non-evaluated nodes
         print('\n')
 
-## de fichero, (to parse/parsing) para llenar estructura de datos para mapa
-
+# Load map from file
 with open(map) as f:
     line = f.readline()
     while line:
@@ -109,18 +95,17 @@ with open(map) as f:
         charMap.append(charLine)
         line = f.readline()
 
-## a nivel mapa, integramos la info que teníamos de start & end
-
+# Load start and end positions
 charMap[start_x][start_y] = '3' # 3: start
 charMap[end_x][end_y] = '4' # 4: goal
 
-###### Empieza algoritmo
-
-done = False  # clásica condición de parada del bucle `while`
-goalParentId = -1  # -1: parentId del nodo goal PROVISIONAL cuando aun no se ha resuelto
+done = False  # Exit loop when done
+goalParentId = -1  # -1: goal node temp parentId
 
 start = time.time()
 end = 0
+
+# Main algorithm
 while not done:
     print("--------------------- number of nodes: "+str(len(nodes)))
     for node in nodes:
@@ -132,7 +117,7 @@ while not done:
         if( charMap[tmpX][tmpY] == '4' ):
             end = time.time() - start
             print("up: GOALLLL!!!")
-            goalParentId = node.myId  # aquí sustituye por real
+            goalParentId = node.myId
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
@@ -147,7 +132,7 @@ while not done:
         if( charMap[tmpX][tmpY] == '4' ):
             end = time.time() - start
             print("down: GOALLLL!!!")
-            goalParentId = node.myId # aquí sustituye por real
+            goalParentId = node.myId
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
@@ -162,7 +147,7 @@ while not done:
         if( charMap[tmpX][tmpY] == '4' ):
             end = time.time() - start
             print("right: GOALLLL!!!")
-            goalParentId = node.myId # aquí sustituye por real
+            goalParentId = node.myId
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
@@ -177,7 +162,7 @@ while not done:
         if( charMap[tmpX][tmpY] == '4' ):
             end = time.time() - start
             print("left: GOALLLL!!!")
-            goalParentId = node.myId # aquí sustituye por real
+            goalParentId = node.myId
             done = True
             break
         elif ( charMap[tmpX][tmpY] == '0' ):
