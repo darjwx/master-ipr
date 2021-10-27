@@ -102,10 +102,9 @@ charMap[end_x][end_y] = '4' # 4: goal
 done = False  # Exit loop when done
 goalParentId = -1  # -1: goal node temp parentId
 
-start = time.time()
-end = 0
-
 # Main algorithm
+end = 0
+start = time.time()
 while not done:
     print("--------------------- number of nodes: "+str(len(nodes)))
     for node in nodes:
@@ -172,17 +171,23 @@ while not done:
             nodes.append(newNode)
 
 print("%%%%%%%%%%%%%%%%%%%")
-print(f"Time until finding the goal: {end*1000} ms")
 ok = False
+num_nodes = 0
 while not ok:
     for node in nodes:
         if( node.myId == goalParentId ):
             if charMap[node.x][node.y] != '3':
                 charMap[node.x][node.y] = '5'
             node.dump()
+            num_nodes += 1
             goalParentId = node.parentId
             if( goalParentId == -2):
                 print("%%%%%%%%%%%%%%%%%2")
                 ok = True
 
 dumpMap()
+print('\033[1;34m-----------------\033[0m')
+print('\033[1;34mNumber of nodes in path: {}\033[0m'.format(num_nodes))
+print('\033[1;34mEvaluated nodes: {}\033[0m'.format(len(nodes)))
+print('\033[1;34mTime until finding the goal: {} ms\033[0m'.format(end*1000))
+print('\033[1;34m-----------------\033[0m')

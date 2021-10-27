@@ -133,9 +133,6 @@ charMap[end_x][end_y] = '4' # 4: goal
 done = False  # Exit loop when done
 goalParentId = -1  # -1: goal node temp parentId
 
-start = time.time()
-end = 0
-
 # Allowed grid moves
 moves = {'up': (-1,0),
          'upright': (-1,1),
@@ -151,10 +148,13 @@ ids = ['up', 'upright', 'right', 'downright', 'down', 'downleft', 'left', 'uplef
 # PriorityQueue to store nodes in cost order
 eval = PriorityQueue()
 id_nodes = 0
+goal_cost = 0
 
 # Main algorithm
+end = 0
+start = time.time()
 while not done:
-    print("--------------------- number of nodes: "+str(len(path)))
+    print("--------------------- number of nodes: "+str(id_nodes+1))
     p = path[-1][1]
     p.dump()
 
@@ -167,6 +167,7 @@ while not done:
             end = time.time() - start
             print("GOALLLL!!!")
             goalParentId = p.myId
+            goal_cost = costMap[tmpX][tmpY]
             done = True
             break
         elif charMap[tmpX][tmpY] == '0':
@@ -186,6 +187,7 @@ while not done:
 print("%%%%%%%%%%%%%%%%%%%")
 print(f"Time until finding the goal: {end*1000} ms")
 ok = False
+dist = 0
 while not ok:
     for p in path:
         node = p[1]
@@ -193,6 +195,7 @@ while not ok:
             if charMap[node.x][node.y] != '3':
                 charMap[node.x][node.y] = '5'
             node.dump()
+            dist += node.c
             goalParentId = node.parentId
             if( goalParentId == -2):
                 print("%%%%%%%%%%%%%%%%%2")
@@ -201,3 +204,9 @@ while not ok:
 dumpMap()
 print('\n')
 dumpCost()
+
+print('\033[1;34m-----------------\033[0m')
+print('\033[1;34mPath distance: {}\033[0m'.format(dist+goal_cost))
+print('\033[1;34mEvaluated nodes: {}\033[0m'.format(id_nodes+1))
+print('\033[1;34mTime until finding the goal: {} ms\033[0m'.format(end*1000))
+print('\033[1;34m-----------------\033[0m')

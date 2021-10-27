@@ -139,9 +139,6 @@ charMap[end_x][end_y] = '4' # 4: goal
 done = False  # Exit loop when done
 goalParentId = -1  # -1: goal node temp parentId
 
-start = time.time()
-end = 0
-
 # Allowed grid moves
 moves = {'up': (-1,0),
          'upright': (-1,1),
@@ -159,6 +156,8 @@ eval = PriorityQueue()
 id_nodes = 0
 
 # Main algorithm
+end = 0
+start = time.time()
 while not done:
     print("--------------------- number of nodes: "+str(id_nodes+1))
     p = path[-1][1]
@@ -173,13 +172,14 @@ while not done:
             end = time.time() - start
             print("GOALLLL!!!")
             goalParentId = p.myId
+            goal_cost = p.g + costMap[tmpX][tmpY]
             done = True
             break
         elif charMap[tmpX][tmpY] == '0':
             print("Mark visited")
             id_nodes = id_nodes+1
             # Calculate cost
-            g = p.g + costMap[tmpX][tmpY] # TODO: non unit cost between nodes
+            g = p.g + costMap[tmpX][tmpY]
             dx = abs(tmpX - end_x)
             dy = abs(tmpY - end_y)
             D = 1
@@ -192,7 +192,7 @@ while not done:
         elif charMap[tmpX][tmpY] == '2':
             print('Mark in eval queue, recalculate cost')
             # Calculate cost
-            g = p.g + costMap[tmpX][tmpY] # TODO: non unit cost between nodes
+            g = p.g + costMap[tmpX][tmpY]
             dx = abs(tmpX - end_x)
             dy = abs(tmpY - end_y)
             D = 1
@@ -215,7 +215,7 @@ while not done:
         elif charMap[tmpX][tmpY] == '5':
             print('Mark in path list, re-evaluate and update parent')
             # Calcular coste
-            g = p.g + costMap[tmpX][tmpY] # TODO: non unit cost between nodes
+            g = p.g + costMap[tmpX][tmpY]
             dx = abs(tmpX - end_x)
             dy = abs(tmpY - end_y)
             D = 1
@@ -258,3 +258,9 @@ while not ok:
 dumpMap()
 print('\n')
 dumpCost()
+
+print('\033[1;34m-----------------\033[0m')
+print('\033[1;34mPath distance: {}\033[0m'.format(goal_cost))
+print('\033[1;34mEvaluated nodes: {}\033[0m'.format(id_nodes+1))
+print('\033[1;34mTime until finding the goal: {} ms\033[0m'.format(end*1000))
+print('\033[1;34m-----------------\033[0m')
