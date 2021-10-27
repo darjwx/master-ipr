@@ -14,9 +14,8 @@
 
 import argparse
 from os import system
-from random import seed
-from random import randint
-seed(1)
+import numpy as np
+np.random.seed(0)
 from queue import PriorityQueue
 
 import time
@@ -124,11 +123,7 @@ with open(map) as f:
     while line:
         charLine = line.strip().split(',')
         charMap.append(charLine)
-        values = []
-        for i in range(len(charLine)):
-            v = randint(1,7)
-            values.append(v)
-        costMap.append(values)
+        costMap.append(np.random.randint(7,size=len(charLine)))
         line = f.readline()
 
 # Load start and end positions
