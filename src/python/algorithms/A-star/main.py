@@ -14,6 +14,8 @@
 
 import argparse
 from os import system
+import numpy as np
+np.random.seed(0)
 from queue import PriorityQueue
 
 import time
@@ -22,6 +24,7 @@ import math
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--map', type=str, default=None, help='Map to test')
+parser.add_argument('--map_cost', action='store_true', help='Wheter to use non-unit map cost')
 parser.add_argument('--root_path', type=str, default=None, help='Path to the project root')
 parser.add_argument('--route', type=str, default='/usr/local/share/master-ipr/map1/map1.csv', help='Route to the desired map')
 parser.add_argument('--start_x', type=int, default=2, help='Starting X coord')
@@ -89,6 +92,8 @@ path.append((init.f, init))
 
 # Map 2D matrix
 charMap = []
+# Cost 2D matrix
+costMap = []
 
 # Print color coded map
 def dumpMap():
@@ -108,12 +113,23 @@ def dumpMap():
                 print('\033[1;33m{}\033[0m'.format(line[i]), end='    ') # Yellow: non-evaluated nodes
         print('\n')
 
+# Print cost matrix
+def dumpCost():
+    for line in costMap:
+        for i in range(len(line)):
+            print('\033[1;37m{}\033[0m'.format(line[i]), end='    ')
+        print('\n')
+
 # Load map from file
 with open(map) as f:
     line = f.readline()
     while line:
         charLine = line.strip().split(',')
         charMap.append(charLine)
+        if args.map_cost:
+            costMap.append(np.random.randint(7,size=len(charLine)))
+        else:
+            costMap.append(np.ones(len(charLine), dtype=int))
         line = f.readline()
 
 # Load start and end positions
@@ -163,7 +179,7 @@ while not done:
             print("Mark visited")
             id_nodes = id_nodes+1
             # Calculate cost
-            g = p.g + 1 # TODO: non unit cost between nodes
+            g = p.g + costMap[tmpX][tmpY] # TODO: non unit cost between nodes
             dx = abs(tmpX - end_x)
             dy = abs(tmpY - end_y)
             D = 1
@@ -176,8 +192,8 @@ while not done:
         elif charMap[tmpX][tmpY] == '2':
             print('Mark in eval queue, recalculate cost')
             # Calculate cost
-            g = p.g + 1 # TODO: non unit cost between nodes
-            dx = abs(tmpX - end_x
+            g = p.g + costMap[tmpX][tmpY] # TODO: non unit cost between nodes
+            dx = abs(tmpX - end_x)
             dy = abs(tmpY - end_y)
             D = 1
             D2 = math.sqrt(2)
@@ -199,7 +215,7 @@ while not done:
         elif charMap[tmpX][tmpY] == '5':
             print('Mark in path list, re-evaluate and update parent')
             # Calcular coste
-            g = p.g + 1 # TODO: non unit cost between nodes
+            g = p.g + costMap[tmpX][tmpY] # TODO: non unit cost between nodes
             dx = abs(tmpX - end_x)
             dy = abs(tmpY - end_y)
             D = 1
@@ -240,3 +256,5 @@ while not ok:
                 ok = True
 
 dumpMap()
+print('\n')
+dumpCost()
