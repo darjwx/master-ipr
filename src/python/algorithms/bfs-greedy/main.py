@@ -22,10 +22,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--map', type=str, default=None, help='Map to test')
 parser.add_argument('--root_path', type=str, default=None, help='Path to the project root')
 parser.add_argument('--route', type=str, default='/usr/local/share/master-ipr/map1/map1.csv', help='Route to the desired map')
-parser.add_argument('--start_x', type=int, default=2, help='Starting X coord')
-parser.add_argument('--start_y', type=int, default=2, help='Starting Y coord')
-parser.add_argument('--end_x', type=int, default=7, help='Ending X coord')
-parser.add_argument('--end_y', type=int, default=2, help='Ending Y coord')
+parser.add_argument('--start', nargs=2, type=int, default=(2,2), help='Starting XY coords')
+parser.add_argument('--end', nargs=2, type=int, default=(7,2), help='Ending XY coords')
 args = parser.parse_args()
 
 # Node class
@@ -55,10 +53,10 @@ if args.map is not None:
 
 else:
     map = args.route
-    start_x = args.start_x
-    start_y = args.start_y
-    end_x = args.end_x
-    end_y = args.end_y
+    start_x = args.start[0]
+    start_y = args.start[1]
+    end_x = args.end[0]
+    end_y = args.end[1]
 
 # List of Nodes
 nodes = []
