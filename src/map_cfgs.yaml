@@ -85,3 +85,11 @@ map11:
     start_y: 16
     end_x: 4
     end_y: 10
+
+map12:
+  route: '/map12/map12.csv'
+  coords:
+    start_x: 2
+    start_y: 2
+    end_x: 28
+    end_y: 18
